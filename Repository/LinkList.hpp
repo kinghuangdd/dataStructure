@@ -25,7 +25,7 @@ void CreateList_headL(LinkList &L,int n)
     for(int i = n;i>0;--i)
     {
         LinkList p = (LinkList)malloc(sizeof(Lnode));
-        cout << "input L " << i << " value :"<< endl;
+        cout << "input the " << i << " value :"<< endl;
         cin >> p->data;
         p->next = L->next;
         L->next = p;
@@ -40,7 +40,7 @@ void CreateList_L(LinkList &L,int n)
     for(int i = 0 ;i<n;)
     {
         LinkList p = (LinkList)malloc(sizeof(Lnode));
-        cout << "input L " << ++i << " value :"<< endl;
+        cout << "input the " << ++i << " value :"<< endl;
         cin >> p->data;
         r->next = p;
         p->next = NULL;
@@ -48,6 +48,17 @@ void CreateList_L(LinkList &L,int n)
     }
 }//CreateList_L
 
+Status Length_L(LinkList L)
+{
+    int j = 0;
+    LinkList p = L;
+    while(p->next)
+    {
+        p = p->next;
+        ++j;
+    }
+    return j;
+}
 Status GetElem_L(LinkList L,int i,ElemType &e)
 {//i的合理范围是i>0,<length(L)
     LinkList p = L->next;
@@ -109,14 +120,97 @@ Status Locate_L(LinkList L,ElemType x)
     return j;
 }
 
+Status DeleteAndInsertSub(LinkList &la,LinkList &lb,int i,int j,int len)
+{//i合理范围为i>0,<=length(la)-len+1;j>0,<length(lb)+1
+    int k = 1;
+    LinkList p,q,s;
+    p = la->next;
+    while(p->next && k<i)//***删除判断p->next
+    {
+        p = p->next;
+        ++k;
+    }
+    if(i<=0 || j<=0 || len <= 0) return ERROR;
+    q = p;
+    k = 1;
+    while(q && k<len)
+    {
+        q = q->next;
+        ++k;
+    }
+    if(!q)return ERROR;
+    s = lb;
+    k = 0;
+    while(s && k<j-1)//***插入判断s,而不是s->next
+    {
+        s = s->next;
+        ++k;
+    }
+    if(!s)return ERROR;
+    q->next = s->next;
+    s->next = p;
+    return OK;
+}//DeleteAndInsertSub
+
+Status ListDelete_Lsamenode(LinkList &L)
+{//***L中元素按递增的顺序排列的
+    LinkList p,r,q;
+    p = L->next;
+    r = L;
+    while(p)
+    {
+        r = p;
+        p = p->next;
+        if(p && p->data == r->data)
+        {
+            q = p;
+            r->next = p->next;
+            p = p->next;
+            free(q);
+        }
+    }
+}//ListDelete_Lsamenode
+
+Status ListDelete_L2(LinkList &L,ElemType min,ElemType max)
+{//L的元素为有序递增的
+    LinkList p,r,q;
+    if(min > max)return ERROR;
+    p = L->next;
+    r = L;
+    while(p && p->data < max)
+    {
+        if(p->data <min)
+        {
+            r = p;
+            p = p->next;
+        }
+        else
+        {
+            q = p;
+            r->next = p->next;
+            p = p->next;
+            free(q);
+            /*
+            q = p;
+            p = p->next;
+            r->next = p;
+            free(q);
+            */
+        }
+    }
+    return OK;
+}
+
 void Print_L(LinkList L)
 {
     LinkList p = L->next;
-    cout << "L data is :" << endl;
+    cout << "the L data is :" << endl;
     while(p)
     {
         cout << p->data << "  ";
         p = p->next;
     }
+    cout << endl;
+    cout << "And the length of L is : "<< Length_L(L) <<endl;
 }
 #endif
